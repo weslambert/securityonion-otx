@@ -1,12 +1,12 @@
 #!/bin/bash
  
-OTX_PATH="/opt/bro/share/bro/bro-otx"
- 
+OTX_PATH="/opt/bro/share/bro/policy/bro-otx"
+
 # Download connector
 echo
 echo "Downloading Bro/OTX Connector ..."
 echo
-cd /opt/bro/share/bro/
+cd /opt/bro/share/bro/policy
 if [ ! -d bro-otx ]; then
 	git clone https://github.com/hosom/bro-otx
 else
@@ -26,7 +26,7 @@ echo
 read -s APIKEY
 
 # Configure connector
-echo "Configuring Bro/OTX Connector..."
+echo "Configuring Bro OTX Connector..."
 echo
 if [ -f $OTX_PATH/bro-otx.conf ]; then
 	sed -i "s|api_key.*|api_key = $APIKEY|" $OTX_PATH/bro-otx.conf
@@ -37,6 +37,7 @@ if [ -f $OTX_PATH/bro-otx.py ];then
 fi
  
 # Add to local.bro
+cp /opt/bro/share/bro/site/local.bro /opt/bro/share/bro/site/local.bro.bak 
 cat << EOF >> /opt/bro/share/bro/site/local.bro
  
 # Load Bro OTX Pulses
@@ -61,7 +62,7 @@ cat << EOF > /etc/cron.d/bro-otx
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
  
-0 * * * * root python /opt/bro/share/bro/bro-otx/bro-otx.py >> /var/log/nsm/bro-otx.log 2>&1
+0 * * * * root python $OTX_PATH/bro-otx/bro-otx.py >> /var/log/nsm/bro-otx.log 2>&1
 EOF
 
 # Restart Bro 
@@ -71,3 +72,11 @@ sudo nsm_sensor_ps-restart --only-bro
 echo "Done!"
 echo
 
+# Check if script(s) loaded
+if [ `grep otx /nsm/bro/logs/current/loaded_scripts.log` ]; then
+	echo "Script(s) loaded!"
+	echo
+else
+	echo "There seems to be an issue with your configuration.  Check /nsm/bro/logs/current/reporter.log for clues."
+	echo
+fi
