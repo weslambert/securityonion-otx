@@ -1,6 +1,6 @@
 #!/bin/bash
  
-OTX_PATH="/opt/bro/share/bro/policy/bro-otx"
+OTX_PATH="/opt/bro/share/bro/policy"
 
 # Download connector
 echo
