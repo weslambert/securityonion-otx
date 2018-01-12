@@ -1,6 +1,6 @@
 #!/bin/bash
  
-OTX_PATH="/opt/bro/share/bro/policy"
+OTX_PATH="/opt/bro/share/bro/policy/bro-otx"
 
 # Download connector
 echo
@@ -62,7 +62,7 @@ cat << EOF > /etc/cron.d/bro-otx
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
  
-0 * * * * root python $OTX_PATH/bro-otx/bro-otx.py >> /var/log/nsm/bro-otx.log 2>&1
+0 * * * * root python $OTX_PATH/bro-otx.py >> /var/log/nsm/bro-otx.log 2>&1
 EOF
 
 # Restart Bro 
