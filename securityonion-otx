@@ -73,7 +73,7 @@ echo "Done!"
 echo
 
 # Check if script(s) loaded
-if [ `grep otx /nsm/bro/logs/current/loaded_scripts.log` ]; then
+if [[ `grep otx /nsm/bro/logs/current/loaded_scripts.log` ]]; then
 	echo "Script(s) loaded!"
 	echo
 else
