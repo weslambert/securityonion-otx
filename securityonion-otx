@@ -39,12 +39,17 @@ if [ -f $OTX_PATH/bro-otx.py ];then
 fi
  
 # Add to local.bro
-cp /opt/bro/share/bro/site/local.bro /opt/bro/share/bro/site/local.bro.bak 
-cat << EOF >> /opt/bro/share/bro/site/local.bro
- 
+if [[ ! `grep bro-otx /opt/bro/share/bro/site/local.bro` ]] ; then
+        cp /opt/bro/share/bro/site/local.bro /opt/bro/share/bro/site/local.bro.bak
+        cat << EOF >> /opt/bro/share/bro/site/local.bro
+
 # Load Bro OTX Pulses
 @load bro-otx
 EOF
+
+else
+        echo "@load bro-otx already exists in local.bro!"
+fi
  
 # Run Pulse retrieval script for first time
 echo "Pulling OTX Pulses..."
