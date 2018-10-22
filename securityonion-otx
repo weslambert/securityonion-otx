@@ -39,7 +39,7 @@ if [ -f $OTX_PATH/bro-otx.py ];then
 fi
  
 # Add to local.bro
-if [[ ! `grep bro-otx /opt/bro/share/bro/site/local.bro` ]] ; then
+if [[ ! `grep bro-otx /opt/bro/share/bro/site/local.bro` ]]; then
         cp /opt/bro/share/bro/site/local.bro /opt/bro/share/bro/site/local.bro.bak
         cat << EOF >> /opt/bro/share/bro/site/local.bro
 
@@ -54,7 +54,7 @@ fi
 # Run Pulse retrieval script for first time
 echo "Pulling OTX Pulses..."
 echo
-if [ -f $OTX_PATH/bro-otx.py ];then
+if [ -f $OTX_PATH/bro-otx.py ]; then
 	/usr/bin/python $OTX_PATH/bro-otx.py
 fi
 
@@ -75,7 +75,7 @@ EOF
 # Restart Bro 
 echo "Restarting Bro..."
 echo
-sudo nsm_sensor_ps-restart --only-bro
+so-bro-restart
 echo "Done!"
 echo
 
