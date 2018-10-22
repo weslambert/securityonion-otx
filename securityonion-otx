@@ -1,18 +1,20 @@
 #!/bin/bash
- 
+
+. /usr/sbin/so-common
+
+# If this is changed, you MUST manually update local.bro to the desired path
 OTX_PATH="/opt/bro/share/bro/policy/bro-otx"
 
 # Download connector
 echo
 echo "Downloading Bro/OTX Connector ..."
 echo
-cd /opt/bro/share/bro/policy
-if [ ! -d bro-otx ]; then
-	git clone https://github.com/hosom/bro-otx
+if [ ! -d $OTX_PATH ]; then
+	git clone https://github.com/hosom/bro-otx $OTX_PATH
 else
 	echo "Bro-OTX directory already exists!"
 fi
-cd bro-otx
+cd $OTX_PATH
 if [ -d scripts ]; then
 	cp -av scripts/* .
 	rm -rf scripts
