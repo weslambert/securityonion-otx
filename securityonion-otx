@@ -47,7 +47,7 @@ fi
 
 # Add to local.zeek
 if [[ ! `grep zeek-otx /opt/so/saltstack/local/pillar/zeek/init.sls` ]]; then
-        sed '/      - securityonion\/file-extraction/a \ \ \ \ \ \ \- zeek-otx' /opt/so/saltstack/local/pillar/zeek/init.sls
+        sed -i '/      - securityonion\/file-extraction/a \ \ \ \ \ \ \- zeek-otx' /opt/so/saltstack/local/pillar/zeek/init.sls
 else
         echo "@load zeek-otx already exists in /opt/so/saltstack/local/pillar/zeek/init.sls!"
 fi
