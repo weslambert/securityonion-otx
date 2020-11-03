@@ -2,8 +2,8 @@
 
 . /usr/sbin/so-common
 
-# If this is changed, you MUST manually update local.bro to the desired path
-OTX_PATH="/opt/so/saltstack/local/salt/zeek/policy/zeek-otx"
+# If this is changed, you MUST manually update local.zeek to the desired path
+OTX_PATH="/opt/so/conf/zeek/policy/custom/zeek-otx"
 
 # Download connector
 echo
@@ -48,7 +48,7 @@ fi
 
 # Add to local.zeek
 if [[ ! `grep zeek-otx /opt/so/saltstack/local/pillar/zeek/init.sls` ]]; then
-        sed -i '/      - securityonion\/file-extraction/a \ \ \ \ \ \ \- zeek-otx' /opt/so/saltstack/local/pillar/zeek/init.sls
+        sed -i '/      - securityonion\/file-extraction/a \ \ \ \ \ \ \- custom/zeek-otx' /opt/so/saltstack/local/pillar/zeek/init.sls
 else
         echo "@load zeek-otx already exists in /opt/so/saltstack/local/pillar/zeek/init.sls!"
 fi
