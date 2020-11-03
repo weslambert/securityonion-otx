@@ -3,22 +3,25 @@
 . /usr/sbin/so-common
 
 # If this is changed, you MUST manually update local.bro to the desired path
-OTX_PATH="/opt/bro/share/bro/policy/bro-otx"
+OTX_PATH="/opt/so/saltstack/local/salt/zeek/policy/zeek-otx"
 
 # Download connector
 echo
-echo "Downloading Bro/OTX Connector ..."
+echo "Downloading Zeek/OTX Connector ..."
 echo
 if [ ! -d $OTX_PATH ]; then
-	git clone https://github.com/hosom/bro-otx $OTX_PATH
+	git clone -b python3 https://github.com/hosom/bro-otx $OTX_PATH
 else
-	echo "Bro-OTX directory already exists!"
+	echo "Zeek-OTX directory already exists!"
 fi
 cd $OTX_PATH
 if [ -d scripts ]; then
 	cp -av scripts/* .
 	rm -rf scripts
 fi 
+
+# TO-DO: Use virtualenv instead
+/bin/pip3 install OTXv2
 
 # Get APIKEY
 echo
@@ -28,62 +31,60 @@ echo
 read -s APIKEY
 
 # Configure connector
-echo "Configuring Bro OTX Connector..."
+echo "Configuring Zeek OTX Connector..."
 echo
-if [ -f $OTX_PATH/bro-otx.conf ]; then
-	sed -i "s|api_key.*|api_key = $APIKEY|" $OTX_PATH/bro-otx.conf
-	sed -i "s|outfile.*|outfile = $OTX_PATH/otx.dat|" $OTX_PATH/bro-otx.conf
+if [ -f $OTX_PATH/zeek_otx.conf ]; then
+	sed -i "s|api_key.*|api_key = $APIKEY|" $OTX_PATH/zeek_otx.conf
+	sed -i "s|outfile.*|outfile = $OTX_PATH/otx.dat|" $OTX_PATH/zeek_otx.conf
 fi 
-if [ -f $OTX_PATH/bro-otx.py ];then
-	sed -i "s|default='bro-otx.conf'|default='$OTX_PATH/bro-otx.conf'|" $OTX_PATH/bro-otx.py
+if [ -f $OTX_PATH/zeek_otx.py ];then
+	sed -i "s|default='zeek_otx.conf'|default='$OTX_PATH/zeek_otx.conf'|" $OTX_PATH/zeek_otx.py
 fi
- 
-# Add to local.bro
-if [[ ! `grep bro-otx /opt/bro/share/bro/site/local.bro` ]]; then
-        cp /opt/bro/share/bro/site/local.bro /opt/bro/share/bro/site/local.bro.bak
-        cat << EOF >> /opt/bro/share/bro/site/local.bro
 
-# Load Bro OTX Pulses
-@load bro-otx
-EOF
+if ! [ -f /opt/so/saltstack/local/pillar/zeek/init.sls ]; then
+  cp /opt/so/saltstack/default/pillar/zeek/init.sls /opt/so/saltstack/local/pillar/zeek/init.sls
+fi
 
+# Add to local.zeek
+if [[ ! `grep zeek-otx /opt/so/saltstack/local/pillar/zeek/init.sls` ]]; then
+        sed '/      - securityonion\/file-extraction/a \ \ \ \ \ \ \- zeek-otx' /opt/so/saltstack/local/pillar/zeek/init.sls
 else
-        echo "@load bro-otx already exists in local.bro!"
+        echo "@load zeek-otx already exists in /opt/so/saltstack/local/pillar/zeek/init.sls!"
 fi
  
 # Run Pulse retrieval script for first time
 echo "Pulling OTX Pulses..."
 echo
-if [ -f $OTX_PATH/bro-otx.py ]; then
-	/usr/bin/python $OTX_PATH/bro-otx.py
+if [ -f $OTX_PATH/zeek_otx.py ]; then
+	/usr/bin/python3 $OTX_PATH/zeek_otx.py
 fi
 
 # Add cron job
 echo "Adding cron job...will run hourly to pull new pulses"
 echo
-cat << EOF > /etc/cron.d/bro-otx
-# /etc/cron.d/bro-otx
+cat << EOF > /etc/cron.d/zeek-otx
+# /etc/cron.d/zeek-otx
 #
-# crontab entry to manage Bro OTX pulse updates
+# crontab entry to manage Zeek OTX pulse updates
  
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
  
-0 * * * * root python $OTX_PATH/bro-otx.py >> /var/log/nsm/bro-otx.log 2>&1
+0 * * * * root python3 $OTX_PATH/zeek_otx.py >> /opt/so/log/zeek-otx.log 2>&1
 EOF
 
-# Restart Bro 
-echo "Restarting Bro..."
+# Restart Zeek 
+echo "Restarting Zeek..."
 echo
-so-bro-restart
+so-zeek-restart --force
 echo "Done!"
 echo
 
 # Check if script(s) loaded
-if [[ `grep otx /nsm/bro/logs/current/loaded_scripts.log` ]]; then
+if [[ `grep otx /nsm/zeek/logs/current/loaded_scripts.log` ]]; then
 	echo "Script(s) loaded!"
 	echo
 else
-	echo "There seems to be an issue with your configuration.  Check /nsm/bro/logs/current/reporter.log for clues."
+	echo "There seems to be an issue with your configuration.  Check /nsm/zeek/logs/current/reporter.log for clues."
 	echo
 fi
