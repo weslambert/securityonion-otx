@@ -18,6 +18,7 @@ cd $OTX_PATH
 if [ -d scripts ]; then
 	cp -av scripts/* .
 	rm -rf scripts
+        mv zeek_otx.py /usr/sbin/zeek_otx.py
 fi 
 
 # TO-DO: Use virtualenv instead
@@ -37,8 +38,8 @@ if [ -f $OTX_PATH/zeek_otx.conf ]; then
 	sed -i "s|api_key.*|api_key = $APIKEY|" $OTX_PATH/zeek_otx.conf
 	sed -i "s|outfile.*|outfile = $OTX_PATH/otx.dat|" $OTX_PATH/zeek_otx.conf
 fi 
-if [ -f $OTX_PATH/zeek_otx.py ];then
-	sed -i "s|default='zeek_otx.conf'|default='$OTX_PATH/zeek_otx.conf'|" $OTX_PATH/zeek_otx.py
+if [ -f /usr/sbin/zeek_otx.py ];then
+	sed -i "s|default='zeek_otx.conf'|default='$OTX_PATH/zeek_otx.conf'|" /usr/sbin/zeek_otx.py
 fi
 
 if ! [ -f /opt/so/saltstack/local/pillar/zeek/init.sls ]; then
@@ -55,8 +56,8 @@ fi
 # Run Pulse retrieval script for first time
 echo "Pulling OTX Pulses..."
 echo
-if [ -f $OTX_PATH/zeek_otx.py ]; then
-	/usr/bin/python3 $OTX_PATH/zeek_otx.py
+if [ -f /usr/sbin/zeek_otx.py ]; then
+	/usr/bin/python3 /usr/sbin/zeek_otx.py
 fi
 
 # Add cron job
@@ -70,7 +71,7 @@ cat << EOF > /etc/cron.d/zeek-otx
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
  
-0 * * * * root python3 $OTX_PATH/zeek_otx.py >> /opt/so/log/zeek-otx.log 2>&1
+0 * * * * root python3 /usr/sbin/zeek_otx.py >> /opt/so/log/zeek-otx.log 2>&1
 EOF
 
 # Restart Zeek 
