@@ -5,7 +5,6 @@ Script to automatically configure [Stephen Hosom's](https://github.com/hosom/bro
 NOTE: This branch is for Security Onion 16.04.
 
 ```
-git clone -b 16.04 https://github.com/weslambert/securityonion-otx
-cd securityonion-otx
+wget https://raw.githubusercontent.com/weslambert/securityonion-otx/master/securityonion-otx
 sudo ./securityonion-otx
 ```
