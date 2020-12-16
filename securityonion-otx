@@ -3,7 +3,7 @@
 . /usr/sbin/so-common
 
 # If this is changed, you MUST manually update local.zeek to the desired path
-OTX_PATH="/opt/so/conf/zeek/policy/custom/zeek-otx"
+OTX_PATH="/opt/so/saltstack/local/salt/zeek/policy/custom/zeek-otx"
 
 # Download connector
 echo
