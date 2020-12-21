@@ -3,6 +3,5 @@ Script to automatically configure [Stephen Hosom's](https://github.com/hosom/bro
 
 You will need an API key for [Alienvault OTX](https://otx.alienvault.com/) to complete this install.
 ```
-wget https://raw.githubusercontent.com/weslambert/securityonion-otx/master/securityonion-otx
-sudo ./securityonion-otx
+wget https://raw.githubusercontent.com/weslambert/securityonion-otx/master/securityonion-otx && sudo chmod +x securityonion-otx && sudo ./securityonion-otx
 ```
