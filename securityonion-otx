@@ -86,17 +86,18 @@ EOF
 # Restart Zeek 
 echo "Restarting Zeek..."
 echo
-so-zeek-restart --force
+ROLE=$(salt-call grains.get id --out=txt | awk '{print $2}' | cut -d '_' -f2)
+if [ "$ROLE" == "eval" ] || [ "$ROLE" == "standalone" ]; then
+        so-zeek-restart
+else
+    if [ "$ROLE" == "sensor" ]; then
+        salt "*_sensor*" cmd.run "so-zeek-restart"
+    elif [ "$ROLE" == "heavynode" ]; then
+        salt "*_heavy*" cmd.run "so-zeek-restart"
+    fi
+fi
 echo "Done!"
 echo
-
-# Check if script(s) loaded
-echo "Waiting for Zeek..."
-sleep 30s
-if [[ `grep otx /nsm/zeek/logs/current/loaded_scripts.log` ]]; then
-	echo "Script(s) loaded!"
-	echo
-else
-	echo "There seems to be an issue with your configuration.  Check /nsm/zeek/logs/current/reporter.log for clues."
-	echo
-fi
+echo "After waiting for a minute or two, try checking the Zeek 'loaded_scripts.log' file on applicable nodes to ensure config is loaded as necessary."
+echo
+echo "Ex 'grep otx /nsm/zeek/logs/current/loaded_scripts.log', or salt '*_sensor' cmd.run 'grep otx /nsm/zeek/logs/current/loaded_scripts.log'"
